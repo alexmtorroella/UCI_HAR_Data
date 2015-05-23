@@ -40,8 +40,8 @@ features$V2 <- gsub("mean", ".Mean.", features$V2)
 features$V2 <- gsub("std", ".STD.", features$V2)
 colnames(X) <- features$V2 
 subX <- X[, as.vector(grep("Mean|STD", colnames(X), value=FALSE))]
-subX <- subX[, as.vector(grep("Mean.Freq", colnames(subX), value=FALSE),
-                         invert = TRUE)]
+subX <- subX[, as.vector(grep("Mean.Freq", colnames(subX), value=FALSE,
+                         invert = TRUE))]
 
 # Create a single data frame with all the relevant values
 meanStd.Data <- bind_cols(subject, y, subX)

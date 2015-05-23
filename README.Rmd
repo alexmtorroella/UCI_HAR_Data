@@ -60,12 +60,12 @@ y$Activity <- as.character(activity_labels[match(y$Activity,
                                                  activity_labels$V1), 'V2'])
 ```
 
-Of the 561 variables gathered from the phone sensors we were only interested in those that were means or standard deviations of each measurement. So those columns were subsetted. There is a total of 73 variables representing mean or standard deviation of the measurements.
+Of the 561 variables gathered from the phone sensors we were only interested in those that were means or standard deviations of each measurement (not including mean frequency variables). So those columns were subsetted. There is a total of 73 variables representing mean or standard deviation of the measurements.
 
 ```{r}
 subX <- X[, as.vector(grep("Mean|STD", colnames(X), value=FALSE))]
-subX <- subX[, as.vector(grep("Mean.Freq", colnames(subX), value=FALSE),
-                         invert = TRUE)]
+subX <- subX[, as.vector(grep("Mean.Freq", colnames(subX), value=FALSE,
+                         invert = TRUE))]
 ```
 
 Finally the three files were combined into a single data frame
@@ -76,7 +76,7 @@ meanStd.Data <- bind_cols(subject, y, subX)
 
 ### Output
 
-From the cleaned up data a summary was made of the average of each variable per activity and per subject. In other words, each subject had 6 activities, and for each of these there is an average of the 79 variable representing mean and standard deviation of the measurements. 
+From the cleaned up data a summary was made of the average of each variable per activity and per subject. In other words, each subject had 6 activities, and for each of these there is an average of the 73 variable representing mean and standard deviation of the measurements. 
 
 
 ```{r}
