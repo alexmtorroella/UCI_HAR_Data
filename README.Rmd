@@ -60,10 +60,12 @@ y$Activity <- as.character(activity_labels[match(y$Activity,
                                                  activity_labels$V1), 'V2'])
 ```
 
-Of the 561 variables gathered from the phone sensors we were only interested in those that were means or standard deviations of each measurement. So those columns were subsetted. There is a total of 79 variables representing mean or standard deviation of the measurements.
+Of the 561 variables gathered from the phone sensors we were only interested in those that were means or standard deviations of each measurement. So those columns were subsetted. There is a total of 73 variables representing mean or standard deviation of the measurements.
 
 ```{r}
 subX <- X[, as.vector(grep("Mean|STD", colnames(X), value=FALSE))]
+subX <- subX[, as.vector(grep("Mean.Freq", colnames(subX), value=FALSE),
+                         invert = TRUE)]
 ```
 
 Finally the three files were combined into a single data frame
