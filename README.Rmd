@@ -1,0 +1,79 @@
+---
+title: "README"
+author: "alexmtorroella"
+date: "May 24, 2015"
+output: html_document
+---
+
+Using the dataset of "Human Activity Recognition Using Smart Phones" from the UCI Machine Learning Repository. This data comes from an experiment using the information from the smart phone to predict the activity of the user.
+
+The different training and testing data sets were combined. The variables representing means and standard deviations were subsetted and summarized. The final output is a tidy data set with these summaries.
+
+### Files
+
+The data was spread out into six files. Three for training and testing respectively. And an extra two files containing variable names and activity labels.  
+
+The first file contains the subjects. A total of 30 subjects were used labeled 1-30.  
+
+The second file contains the activities performend using id 1-6, which are attached to the labels in the file activity_labels.txt. The activities were:
+1            WALKING
+2   WALKING_UPSTAIRS
+3 WALKING_DOWNSTAIRS
+4            SITTING
+5           STANDING
+6             LAYING
+
+The third file is a data set with 561 variables from the accelerometer and gyroscope from the phone. The column titles explaining the variables were in the features.txt file.
+
+
+### Cleaning the Data
+
+The first step was to combine the training and testing data of each file.
+
+```{r}
+subject <- bind_rows(subject_train, subject_test)
+X <- bind_rows(X_train, X_test)
+y <- bind_rows(y_train, y_test)
+```
+
+Next variables were renamed to be more descriptive. For the subjects and activities this was very straightforward as each set had a single column.
+
+```{r}
+ubject <- rename(subject, Subject = V1)
+y <- rename(y, Activity = V1)
+```
+
+However for the data collected from the phone sensors this couldn't be done manually. Fortunately the variable names were already pretty descriptive, just in a different file. It was only a matter of renaming the 561 variables from a data frame extracted from the file.
+
+
+```{r}
+colnames(X) <- features$V2 
+```
+
+The activity labels were then substituted into the data frame of activity ids.
+
+```{r}
+y$Activity <- as.character(activity_labels[match(y$Activity, 
+                                                 activity_labels$V1), 'V2'])
+```
+
+Of the 561 variables gathered from the phone sensors we were only interested in those that were means or standard deviations of each measurement. So those columns were subsetted. There is a total of 79 variables representing mean or standard deviation of the measurements.
+
+```{r}
+subX <- X[, as.vector(grep("mean|std", colnames(X), value=FALSE))]
+```
+
+Finally the three files were combined into a single data frame
+
+```{r}
+meanStd.Data <- bind_cols(subject, y, subX)
+```
+
+### Output
+
+From the cleaned up data a summary was made of the average of each variable per activity and per subject. In other words, each subject had 6 activities, and for each of these there is an average of the 79 variable representing mean and standard deviation of the measurements. 
+
+
+```{r}
+tidy.Summary <- meanStd.Data %>% group_by(Activity,Subject) %>% summarise_each(funs(mean))
+```
