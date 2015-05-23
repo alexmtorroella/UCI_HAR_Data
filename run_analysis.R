@@ -31,9 +31,17 @@ y$Activity <- as.character(activity_labels[match(y$Activity,
                                                  activity_labels$V1), 'V2'])
 
 # Use the variable names from features.txt to name the columns of X
-# and subset those with mean or std in the name
+# and subset those with mean or std in the name.
+# But first, eliminate illegal characters for variable names. Make mean and std 
+# more readable by adding a "." before and after and using capitalization
+
+features$V2 <- gsub("[[:punct:]]", "", features$V2)
+features$V2 <- gsub("mean", ".Mean.", features$V2)
+features$V2 <- gsub("std", ".STD.", features$V2)
 colnames(X) <- features$V2 
-subX <- X[, as.vector(grep("mean|std", colnames(X), value=FALSE))]
+subX <- X[, as.vector(grep("Mean|STD", colnames(X), value=FALSE))]
+subX <- subX[, as.vector(grep("Mean.Freq", colnames(subX), value=FALSE),
+                         invert = TRUE)]
 
 # Create a single data frame with all the relevant values
 meanStd.Data <- bind_cols(subject, y, subX)

@@ -39,14 +39,17 @@ y <- bind_rows(y_train, y_test)
 Next variables were renamed to be more descriptive. For the subjects and activities this was very straightforward as each set had a single column.
 
 ```{r}
-ubject <- rename(subject, Subject = V1)
+subject <- rename(subject, Subject = V1)
 y <- rename(y, Activity = V1)
 ```
 
-However for the data collected from the phone sensors this couldn't be done manually. Fortunately the variable names were already pretty descriptive, just in a different file. It was only a matter of renaming the 561 variables from a data frame extracted from the file.
+However for the data collected from the phone sensors this couldn't be done manually. Fortunately the variable names were already pretty descriptive, just in a different file. It was only a matter of renaming the 561 variables from a data frame extracted from the file. However some of these variables have illegal characters, e.g., "()", "-", etc, so those were eliminated first. For readability mean and std were surrounded by "." and capitalized.
 
 
 ```{r}
+features$V2 <- gsub("[[:punct:]]", "", features$V2)
+features$V2 <- gsub("mean", ".Mean.", features$V2)
+features$V2 <- gsub("std", ".STD.", features$V2)
 colnames(X) <- features$V2 
 ```
 
@@ -60,7 +63,7 @@ y$Activity <- as.character(activity_labels[match(y$Activity,
 Of the 561 variables gathered from the phone sensors we were only interested in those that were means or standard deviations of each measurement. So those columns were subsetted. There is a total of 79 variables representing mean or standard deviation of the measurements.
 
 ```{r}
-subX <- X[, as.vector(grep("mean|std", colnames(X), value=FALSE))]
+subX <- X[, as.vector(grep("Mean|STD", colnames(X), value=FALSE))]
 ```
 
 Finally the three files were combined into a single data frame
@@ -75,5 +78,5 @@ From the cleaned up data a summary was made of the average of each variable per 
 
 
 ```{r}
-tidy.Summary <- meanStd.Data %>% group_by(Activity,Subject) %>% summarise_each(funs(mean))
+tidy.Summary <- meanStd.Data %>% group_by(Activity,Subject) %>% summarise_each(funs(mean)) 
 ```
